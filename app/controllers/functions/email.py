@@ -1,6 +1,6 @@
 from time import strftime, gmtime
 from flask import url_for, render_template
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import current_user
 from flask_mail import Mail, Message
 from app import app
 from app.models.models import *
@@ -67,7 +67,7 @@ def enviarEmailDM(app, nome, email, mensagem):
             log = open('logMailError.txt', 'a+')
             log.write(f'{str(e)} {email} {strftime("%a, %d %b %Y %H:%M:%S", gmtime())}\n')
             log.close()
-        except:
+        except Exception:
             return
 
 

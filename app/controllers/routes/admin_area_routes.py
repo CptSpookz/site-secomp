@@ -1,4 +1,4 @@
-from random import randint
+from random import SystemRandom
 from flask import render_template, request, redirect, abort, url_for, Blueprint
 from flask_login import login_required, current_user
 
@@ -79,10 +79,10 @@ def sortear():
 def sorteando():
     # <Falta conferir permissões>
     sorteado = db.session.query(Participante)
-    sorteado = sorteado[randint(1, sorteado.count()) - 1]
+    sorteado = sorteado[SystemRandom().randint(1, sorteado.count()) - 1]
     return render_template('sortear_usuario.html', sorteado=sorteado, sorteando=True)
 
-@app.route('/area-administrativa/alterar-camiseta', methods=["GET","POST"])
+@app.route('/area-administrativa/alterar-camiseta', methods=["GET", "POST"])
 @login_required
 def alterar_camiseta():
     # <Falta conferir permissões>

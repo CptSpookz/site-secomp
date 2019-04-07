@@ -1,5 +1,5 @@
 from os import path, makedirs
-from flask import render_template, request, redirect, abort, flash, Blueprint
+from flask import render_template, request, redirect, flash, Blueprint
 from bcrypt import gensalt
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from passlib.hash import pbkdf2_sha256

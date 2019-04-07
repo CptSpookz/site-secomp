@@ -15,9 +15,11 @@ def index():
                            secomp_email=secomp_email,
                            secompEdition=secomp_edition)
 
+
 @app.route('/dev')
 def dev():
     return render_template('index.dev.html')
+
 
 @app.route('/contato', methods=['POST', 'GET'])
 def contatoDM():
@@ -32,7 +34,8 @@ def contatoDM():
         enviarEmailDM(app, nome, email, mensagem)
         return render_template('contato.html', form=form, enviado=True)
     return render_template('contato.html', form=form)
-    
+
+
 @app.route('/constr')
 def constr():
     return render_template('em_constr.html', title='Página em construção')
