@@ -6,8 +6,6 @@ from app.controllers.functions import *
 from app.models.models import *
 from os import path, makedirs
 
-admin_area_routes = Blueprint('admin_area_routes', __name__, template_folder='templates')
-@app.route('/area-administrativa/estoque-camisetas')
 @login_required
 def estoque_camisetas():
     if (current_user.permissao > 0):
@@ -17,7 +15,6 @@ def estoque_camisetas():
         abort(403)
 
 
-@app.route('/area-administrativa/estoque-camisetas/<tamanho>')
 @login_required
 def estoque_camisetas_por_tamanho(tamanho):
     if (current_user.permissao > 0):
@@ -26,8 +23,6 @@ def estoque_camisetas_por_tamanho(tamanho):
     else:
         abort(403)
 
-
-@app.route('/area-administrativa/cadastro-patrocinio', methods=['POST', 'GET'])
 @login_required
 def cadastro_patrocinio():
     form = PatrocinadorForm(request.form)
@@ -45,7 +40,6 @@ def cadastro_patrocinio():
     else:
         return render_template('cadastro_patrocinio.html', form=form)
 
-@app.route('/area-administrativa/venda-kits', methods=['POST', 'GET'])
 @login_required
 def vender_kits():
     #<Falta conferir permissões>
@@ -68,12 +62,10 @@ def vender_kits():
             return render_template('venda_de_kits.html', alerta="Sem estoque para " + camiseta.tamanho, form=form)
     return render_template('venda_de_kits.html', alerta="Preencha o formulário abaixo", form=form)
 
-@app.route('/area-administrativa/fazer-sorteio')
 @login_required
 def sortear():
     return render_template('sortear_usuario.html', sorteando=False)
 
-@app.route('/area-administrativa/fazer-sorteio/do')
 @login_required
 def sorteando():
     # <Falta conferir permissões>
@@ -81,7 +73,6 @@ def sorteando():
     sorteado = sorteado[randint(1, sorteado.count()) - 1]
     return render_template('sortear_usuario.html', sorteado=sorteado, sorteando=True)
 
-@app.route('/area-administrativa/alterar-camiseta', methods=["GET","POST"])
 @login_required
 def alterar_camiseta():
     # <Falta conferir permissões>

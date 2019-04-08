@@ -20,14 +20,20 @@ babel = Babel(app)
 app.config.from_pyfile(configs[config_name])
 
 from app.models.models import db, Usuario
-from app.controllers.routes.user_routes import user_routes
-from app.controllers.routes.routes import routes
-from app.controllers.routes.admin_area_routes import admin_area_routes
+
+from app.controllers.urls import *
+from app.controllers.urls.urls import *
+from app.controllers.urls.urls_area_administrativa import *
+from app.controllers.urls.urls_participante import *
+from app.controllers.urls.urls_login import *
+
+main_route_controller(urls)
+main_route_controller(urls_area_administrativa)
+main_route_controller(urls_participante)
+main_route_controller(urls_login)
 
 migrate = Migrate(app, db)
 
-app.register_blueprint(user_routes)
-app.register_blueprint(routes)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -40,7 +46,7 @@ def user_loader(user_id):
 def unauthorized_callback():
     return redirect('/login')
 
-from app.controllers import routes, admin
+from app.controllers import admin
 
 upload_path = os.path.join(os.path.dirname(__file__), 'static')
 adm = admin.init_admin(app, upload_path)

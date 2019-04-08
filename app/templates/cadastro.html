@@ -22,28 +22,67 @@
         <h1 class="text-center">CADASTRO</h1>
         <form method="POST" action="/participante/cadastro">
           {{ form.hidden_tag() }}
-          <div class="col-6 mx-auto">
+          <div class="row">
+            <div class="col">
             {{ wtf.form_field(form.primeiro_nome) }}
+            </div>
+            <div class="col">
             {{ wtf.form_field(form.sobrenome) }}
-            {{ wtf.form_field(form.email) }}
+          </div>
+          </div>
+          <div class="row">
+            <div class="col">
             {{ wtf.form_field(form.senha) }}
+            </div>
+            <div class="col">
+            {{ wtf.form_field(form.email) }}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
             {{ wtf.form_field(form.confirmacao) }}
+            </div>
+            <div class="col">
             {{ wtf.form_field(form.curso) }}
             {{ wtf.form_field(form.outro_curso) }}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+            {{ wtf.form_field(form.data_nasc) }}
+            </div>
+            <div class="col">
             {{ wtf.form_field(form.instituicao) }}
             {{ wtf.form_field(form.outra_instituicao) }}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              {{ form.recaptcha }}
+              {% if form.recaptcha.errors %}
+                <span class="help-block">É necessário validar o recaptcha</span>
+              {% endif %}
+            </div>
+            <div class="col">
             {{ wtf.form_field(form.cidade) }}
             {{ wtf.form_field(form.outra_cidade) }}
+<<<<<<< Updated upstream
             {{ wtf.form_field(form.data_nasc) }}
             {{ form.recaptcha }}
             {% if form.recaptcha.errors %}
               <span class="help-block">É necessário validar o recaptcha</span>
             {% endif %}
             <br>
+=======
+            </div>
+          </div>
+>>>>>>> Stashed changes
             <button type="submit" class="btn btn-primary" style="margin-top:10px;width:120px;">Cadastrar</button>
 
         </form>
-    </div>
     <script>
     $(document).ready(function($){
 	    $('#data_nasc').mask('00/00/0000');
