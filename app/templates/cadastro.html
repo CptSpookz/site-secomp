@@ -61,25 +61,16 @@
 
           <div class="row">
             <div class="col">
-              {{ form.recaptcha }}
-              {% if form.recaptcha.errors %}
-                <span class="help-block">É necessário validar o recaptcha</span>
-              {% endif %}
-            </div>
-            <div class="col">
-            {{ wtf.form_field(form.cidade) }}
-            {{ wtf.form_field(form.outra_cidade) }}
-<<<<<<< Updated upstream
-            {{ wtf.form_field(form.data_nasc) }}
             {{ form.recaptcha }}
             {% if form.recaptcha.errors %}
               <span class="help-block">É necessário validar o recaptcha</span>
             {% endif %}
-            <br>
-=======
-            </div>
           </div>
->>>>>>> Stashed changes
+            <div class="col">
+            {{ wtf.form_field(form.cidade) }}
+            {{ wtf.form_field(form.outra_cidade) }}
+          </div>
+        </div>
             <button type="submit" class="btn btn-primary" style="margin-top:10px;width:120px;">Cadastrar</button>
 
         </form>

@@ -14,7 +14,6 @@ def estoque_camisetas():
     else:
         abort(403)
 
-
 @login_required
 def estoque_camisetas_por_tamanho(tamanho):
     if (current_user.permissao > 0):

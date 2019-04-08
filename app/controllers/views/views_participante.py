@@ -1,8 +1,7 @@
-from flask import render_template, request, redirect, url_for, Blueprint
+from os import path, makedirs
+from flask import render_template, request, redirect, flash, Blueprint
 from flask_login import login_required, login_user, logout_user, current_user
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from bcrypt import gensalt
-from flask import render_template, request, redirect, abort, flash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from passlib.hash import pbkdf2_sha256
 from werkzeug import secure_filename
@@ -151,11 +150,11 @@ def verificacao(token):
 @login_required
 def inscricao_atividades():
     minicursos = db.session.query(Atividade).filter_by(
-        tipo=Atividades.MINICURSO.value)
+        tipo=TipoAtividade['minicurso'])
     workshops = db.session.query(Atividade).filter_by(
-        tipo=Atividades.WORKSHOP.value)
+        tipo=TipoAtividade['workshop'])
     palestras = db.session.query(Atividade).filter_by(
-        tipo=Atividades.PALESTRA.value)
+        tipo=TipoAtividade['palestra'])
     return render_template('inscricao_atividades.html',
                            participante=db.session.query(Participante).filter_by(
                                usuario=current_user).first(),
@@ -164,11 +163,11 @@ def inscricao_atividades():
 @login_required
 def inscricao_atividades_com_filtro(filtro):
     minicursos = db.session.query(Atividade).filter(
-        Atividade.tipo.like(Atividades.MINICURSO.value), Atividade.titulo.like("%" + filtro + "%"))
+        Atividade.tipo.like(TipoAtividade['minicurso']), Atividade.titulo.like("%" + filtro + "%"))
     workshops = db.session.query(Atividade).filter(
-        Atividade.tipo.like(Atividades.WORKSHOP.value), Atividade.titulo.like("%" + filtro + "%"))
+        Atividade.tipo.like(TipoAtividade['workshop']), Atividade.titulo.like("%" + filtro + "%"))
     palestras = db.session.query(Atividade).filter(
-        Atividade.tipo.like(Atividades.PALESTRA.value), Atividade.titulo.like("%" + filtro + "%"))
+        Atividade.tipo.like(TipoAtividade['palestra']), Atividade.titulo.like("%" + filtro + "%"))
 
     return render_template('inscricao_atividades.html',
                            participante=db.session.query(Participante).filter_by(
@@ -185,11 +184,11 @@ def inscrever(id):
         db.session.flush()
         db.session.commit()
         minicursos = db.session.query(Atividade).filter_by(
-            tipo=Atividades.MINICURSO.value)
+            tipo=TipoAtividade['minicurso'])
         workshops = db.session.query(Atividade).filter_by(
-            tipo=Atividades.WORKSHOP.value)
+            tipo=TipoAtividade['workshop'])
         palestras = db.session.query(Atividade).filter_by(
-            tipo=Atividades.PALESTRA.value)
+            tipo=TipoAtividade['palestra'])
 
         return render_template('inscricao_atividades.html',
                                participante=db.session.query(Participante).filter_by(
@@ -210,11 +209,11 @@ def desinscrever(id):
         db.session.flush()
         db.session.commit()
         minicursos = db.session.query(Atividade).filter_by(
-            tipo=Atividades.MINICURSO.value)
+            tipo=TipoAtividade['minicurso'])
         workshops = db.session.query(Atividade).filter_by(
-            tipo=Atividades.WORKSHOP.value)
+            tipo=TipoAtividade['workshop'])
         palestras = db.session.query(Atividade).filter_by(
-            tipo=Atividades.PALESTRA.value)
+            tipo=TipoAtividade['palestra'])
         return render_template('inscricao_atividades.html',
                                participante=db.session.query(Participante).filter_by(
                                    usuario=current_user).first(),
