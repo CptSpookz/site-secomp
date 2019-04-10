@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, Blueprint
+from flask import render_template, request, redirect, url_for
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import render_template, request, redirect, abort, flash
 from passlib.hash import pbkdf2_sha256
