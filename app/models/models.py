@@ -2,6 +2,11 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Date
 from app import app
+from passlib.hash import pbkdf2_sha256
+from bcrypt import gensalt
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from app.controllers.constants import *
+from flask_login import login_required, current_user
 
 db = SQLAlchemy(app)
 
@@ -20,6 +25,29 @@ TipoAtividade = {
     'palestra': 2
 }
 
+def _commit(objeto):
+    db.session.add(objeto)
+    db.session.commit()
+
+def get_id_evento_atual():
+    id_evento = db.session.query(Evento).filter_by(edicao=EDICAO_ATUAL).first().id
+    return id_evento
+
+def email_confirmado():
+    try:
+        usuario = current_user
+        usuario = db.session.query(Usuario).filter_by(
+            email=usuario.email).first()
+        return usuario.email_verificado
+    except Exception as e:
+        print(e)
+        return None
+
+def verifica_outro_escolhido(campo, objeto):
+    if campo.data == 0:
+        return cadastra_objeto_generico(objeto).id
+    else:
+        return campo.data
 
 class Usuario(db.Model):
     __tablename__ = 'usuario'
@@ -62,6 +90,23 @@ class Usuario(db.Model):
     def __repr__(self):
         return self.primeiro_nome + " " + self.sobrenome + " <" + self.email + ">"
 
+    def criar_usuario(form):
+        serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        email = form.email.data
+        salt = gensalt().decode('utf-8')
+        token = serializer.dumps(email, salt=salt)
+
+        agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        hash = pbkdf2_sha256.encrypt(form.senha.data, rounds=10000, salt_size=15)
+        usuario = Usuario(email=email, senha=hash, ultimo_login=agora,
+                data_cadastro=agora, permissao=0, primeiro_nome=form.primeiro_nome.data,
+                sobrenome=form.sobrenome.data, id_curso=verifica_outro_escolhido(form.curso,
+                Curso(nome=str(form.outro_curso.data).strip())), id_instituicao=verifica_outro_escolhido(
+                form.instituicao, Instituicao(nome=form.outra_instituicao.data)),
+                id_cidade=verifica_outro_escolhido(form.cidade, Cidade(nome=form.outra_cidade.data)),
+                data_nascimento=form.data_nasc.data, token_email=token, autenticado=True, salt=salt)
+        _commit(usuario)
+        return [usuario, salt, token]
 
 class Participante(db.Model):
     __tablename__ = 'participante'
@@ -82,6 +127,20 @@ class Participante(db.Model):
     def __repr__(self):
         return self.usuario.primeiro_nome + " " + self.usuario.sobrenome + " <" + self.email + ">"
 
+    def cria_participante(form):
+        agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        usuario = current_user
+        participante = Participante(id_usuario=usuario.id, id_evento=get_id_evento_atual(), pacote=form.kit.data,
+                    pagamento=False, id_camiseta=form.camiseta.data, data_inscricao=agora, credenciado=False,
+                    opcao_coffee=form.restricao_coffee.data)
+        _commit(participante)
+
+    def participante_existe(usuario):
+        participante = db.session.query(Participante).filter_by(id_usuario=usuario.id, id_evento=get_id_evento_atual()).first()
+        if participante is not None:
+            return False
+        else:
+            return True
 
 class Ministrante(db.Model):
     __tablename__ = 'ministrante'

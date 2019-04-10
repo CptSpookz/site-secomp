@@ -1,4 +1,11 @@
 from app.models.models import *
+from app.controllers.exceptions import *
+
+def valida_participante(usuario):
+    if Participante.participante_existe(usuario) == False:
+        raise ParticipanteExiste
+    elif email_confirmado() == False:
+        raise EmailNaoConfirmado
 
 
 def get_score_evento(edicao):
@@ -41,10 +48,3 @@ def cadastra_objeto_generico(objeto):
     except Exception as e:
         print(e)
         return None
-
-
-def verifica_outro_escolhido(campo, objeto):
-    if campo.data == 0:
-        return cadastra_objeto_generico(objeto).id
-    else:
-        return campo.data

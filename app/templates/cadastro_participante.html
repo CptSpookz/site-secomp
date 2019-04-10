@@ -4,7 +4,7 @@
 {% block navbar %}{% endblock %}
 {% block content %}
 <h2>Preencha com as informações do participante</h2><br>
-<form method="POST" action="/cadastro-participante">
+<form method="POST" action="/participante/cadastro-participante">
   {{ form.hidden_tag() }}
   {{ wtf.form_field(form.kit) }}
   {{ wtf.form_field(form.camiseta) }}

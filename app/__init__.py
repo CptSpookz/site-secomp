@@ -22,15 +22,11 @@ app.config.from_pyfile(configs[config_name])
 from app.models.models import db, Usuario
 
 from app.controllers.urls import *
-from app.controllers.urls.urls import *
-from app.controllers.urls.urls_area_administrativa import *
-from app.controllers.urls.urls_participante import *
-from app.controllers.urls.urls_login import *
 
 main_route_controller(urls)
-main_route_controller(urls_area_administrativa)
-main_route_controller(urls_participante)
-main_route_controller(urls_login)
+main_route_controller(urls_aa)
+main_route_controller(urls_p)
+main_route_controller(urls_l)
 
 migrate = Migrate(app, db)
 

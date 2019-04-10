@@ -2,6 +2,7 @@
 from app import app
 from app.controllers.views import views
 
+#[{route}, {endpoint}, {view_func}, {methods}]
 urls = [
     ['/', 'index', views.index, ["POST", "GET"]],
     ['/contatoDM', 'contatoDM', views.contatoDM, ["POST", "GET"]],

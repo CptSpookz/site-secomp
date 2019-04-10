@@ -78,22 +78,10 @@ def enviarEmailSenha(usuario, token):
     info = {
         "assunto": 'Alteração de Senha',
         "nome": usuario.primeiro_nome,
-        "titulo": 'ALTERAÇÃO DE SENHA',
+        "titulo": 'ALTERAÇÃO DE dashboarddashboarddashboarddashboardSENHA',
         "email": usuario.email,
         "template": 'email/alteracao_senha.html',
         "link": str(link),
         "footer": 'TI X SECCOMP UFSCar'
     }
     enviarEmailGenerico(info)
-
-
-def email_confirmado():
-    try:
-        usuario = current_user
-        usuario = db.session.query(Usuario).filter_by(
-            email=usuario.email).first()
-        return usuario.email_verificado
-    except Exception as e:
-        print(e)
-        return None
-

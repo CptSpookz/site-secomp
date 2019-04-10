@@ -4,6 +4,7 @@ from app.controllers.views import views_area_administrativa as views
 
 base_url = '/area-administrativa/'
 
+#[{route}, {endpoint}, {view_func}, {methods}]
 urls_area_administrativa = [
     ['estoque-camisetas', 'estoque_camisetas', views.estoque_camisetas, ["POST", "GET"]],
     ['estoque-camisetas/<tamanho>', 'estoque_camisetas_por_tamanho', views.estoque_camisetas_por_tamanho, ["POST", "GET"]],

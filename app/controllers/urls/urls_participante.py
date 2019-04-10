@@ -4,6 +4,7 @@ from app.controllers.views import views_participante as views
 
 base_url = '/participante/'
 
+#[{route}, {endpoint}, {view_func}, {methods}]
 urls_participante = [
     ['cadastro', 'cadastro', views.cadastro, ["POST", "GET"]],
     ['verificar-email', 'verificar_email', views.verificar_email, ["POST", "GET"]],

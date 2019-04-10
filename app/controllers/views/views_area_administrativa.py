@@ -1,10 +1,4 @@
-from flask import render_template, request, redirect, abort, url_for, Blueprint
-from flask_login import login_required, login_user, logout_user, current_user
-
-from app.controllers.forms import *
-from app.controllers.functions import *
-from app.models.models import *
-from os import path, makedirs
+from app.controllers.views.imports.vaa_dep import *
 
 @login_required
 def estoque_camisetas():
@@ -69,7 +63,7 @@ def sortear():
 def sorteando():
     # <Falta conferir permissões>
     sorteado = db.session.query(Participante)
-    sorteado = sorteado[randint(1, sorteado.count()) - 1]
+    sorteado = sorteado[SystemRandom().randint(1, sorteado.count()) - 1]
     return render_template('sortear_usuario.html', sorteado=sorteado, sorteando=True)
 
 @login_required

@@ -1,46 +1,13 @@
-from os import path, makedirs
-from flask import render_template, request, redirect, flash, Blueprint
-from flask_login import login_required, login_user, logout_user, current_user
-from bcrypt import gensalt
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-from passlib.hash import pbkdf2_sha256
-from werkzeug import secure_filename
-
-from app.controllers.forms import *
-from app.controllers.functions.email import *
-from app.controllers.functions.dictionaries import *
-from app.controllers.functions.aux import *
-from app.models.models import *
+from app.controllers.views.imports.vp_dep import *
 
 def cadastro():
-    """
-    Renderiza a página de cadastro do projeto
-    """
-    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-
     form = CadastroForm(request.form)
-    email = form.email.data
-    salt = gensalt().decode('utf-8')
-    token = serializer.dumps(email, salt=salt)
-
     if form.validate_on_submit():
-        agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        hash = pbkdf2_sha256.encrypt(form.senha.data, rounds=10000, salt_size=15)
-        usuario = Usuario(email=email, senha=hash, ultimo_login=agora,
-                data_cadastro=agora, permissao=0, primeiro_nome=form.primeiro_nome.data,
-                sobrenome=form.sobrenome.data, id_curso=verifica_outro_escolhido(form.curso,
-                Curso(nome=str(form.outro_curso.data).strip())), id_instituicao=verifica_outro_escolhido(
-                form.instituicao, Instituicao(nome=form.outra_instituicao.data)),
-                id_cidade=verifica_outro_escolhido(form.cidade, Cidade(nome=form.outra_cidade.data)),
-                data_nascimento=form.data_nasc.data, token_email=token, autenticado=True, salt=salt)
-        db.session.add(usuario)
-        db.session.flush()
-        db.session.commit()
+        usuario, salt, token = Usuario.criar_usuario(form)
         enviarEmailConfirmacao(usuario, token)
         login_user(usuario, remember=True)
         return redirect(url_for('verificar_email'))
     return render_template('cadastro.html', form=form)
-
 
 @login_required
 def verificar_email():
@@ -52,34 +19,19 @@ def verificar_email():
         status = False
     return render_template('confirma_email.html', resultado=msg, status=status)
 
-
 @login_required
 def cadastro_participante():
-    id_evento = db.session.query(Evento).filter_by(
-        edicao=EDICAO_ATUAL).first().id
-    if email_confirmado() == True:
-        participante = db.session.query(Participante).filter_by(
-            id_usuario=current_user.id, id_evento=id_evento).first()
-        if participante is None:
-            form = ParticipanteForm(request.form)
-            participante = db.session.query(Participante).filter_by(
-                id_usuario=current_user.id, id_evento=id_evento).first()
-            if form.validate_on_submit() and participante is None:
-                agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                usuario = current_user
-                participante = Participante(id_usuario=usuario.id, id_evento=id_evento, pacote=form.kit.data,
-                                            pagamento=False, id_camiseta=form.camiseta.data, data_inscricao=agora, credenciado=False,
-                                            opcao_coffee=form.restricao_coffee.data)
-                db.session.add(participante)
-                db.session.flush()
-                db.session.commit()
-                return redirect(url_for('dashboard_usuario'))
-            else:
-                return render_template('cadastro_participante.html', form=form)
-        else:
+    form = ParticipanteForm(request.form)
+    if form.validate_on_submit():
+        try:
+            valida_participante(current_user)
+            participante = Participante.cria_participante(form)
             return redirect(url_for('dashboard_usuario'))
-    else:
-        return redirect(url_for('verificar_email'))
+        except ParticipanteExiste:
+            return render_template('cadastro_participante.html', form=form)
+        except EmailNaoConfirmado:
+            return redirect(url_for('verificar_email'))
+    return render_template('cadastro_participante.html', form=form)
 
 @login_required
 def dashboard_usuario():
@@ -122,10 +74,6 @@ def envio_comprovante():
     return render_template('enviar_comprovante.html', form=form)
 
 def verificacao(token):
-    """
-    Página do link enviado para o usuário
-    """
-
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
     try:
         # Acha o usuário que possui o token
@@ -269,10 +217,9 @@ def confirmar_alteracao_senha(token):
             # Gera um email a partir do token do link e do salt do db
             email = serializer.loads(token, salt=salt, max_age=3600)
             hash = pbkdf2_sha256.encrypt(
-                form.nova_senha.data, rounds=10000, salt_size=15)
+            form.nova_senha.data, rounds=10000, salt_size=15)
             usuario.senha = hash
-            db.session.add(usuario)
-            db.session.commit()
+            _commit(usuario)
         except SignatureExpired:
             return "O link de confirmação expirou !"
         except Exception as e:
