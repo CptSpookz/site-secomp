@@ -4,5 +4,5 @@ from flask import render_template, request, redirect, abort, flash
 from passlib.hash import pbkdf2_sha256
 from werkzeug import secure_filename
 
-from app.controllers.forms import LoginForm
+from app.controllers.forms.forms_usuario import LoginForm
 from app.models.models import Usuario, db

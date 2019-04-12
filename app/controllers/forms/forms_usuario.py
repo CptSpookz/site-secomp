@@ -1,11 +1,9 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, BooleanField, SelectField, DateField
 from wtforms.validators import InputRequired, Email, Length, EqualTo
 
-from app.controllers.functions.form_choices import get_opcoes_cotas_patrocinadores, get_opcoes_cidades, get_opcoes_instituicoes, get_opcoes_cursos, get_opcoes_camisetas
+from app.controllers.functions.form_choices import get_opcoes_cidades, get_opcoes_instituicoes, get_opcoes_cursos
 from app.controllers.functions.custom_form_validators import erro_curso_existe, erro_instituicao_existe, erro_cidade_existe, so_letras, email_existe
-from app.controllers.functions.aux import get_participantes
 from app.controllers.constants import *
 
 
@@ -41,15 +39,6 @@ class CadastroForm(FlaskForm):
                           format="%d/%m/%Y", id="data_nasc")
     recaptcha = RecaptchaField()
 
-
-class ParticipanteForm(FlaskForm):
-    kit = BooleanField('Kit', id="kit")
-    camiseta = SelectField('Camiseta', choices=get_opcoes_camisetas(
-    ), id="camiseta", default="P Feminino", coerce=int)
-    restricao_coffee = SelectField(
-        'Restrição para o Coffee-Break', choices=escolhas_restricao, default="Nenhum", coerce=int, id="restricao_coffee")
-
-
 class EditarUsuarioForm(FlaskForm):
     primeiro_nome = StringField('Primeiro Nome', validators=[InputRequired(
         message=ERRO_INPUT_REQUIRED), Length(min=1, max=30)])
@@ -80,41 +69,3 @@ class AlterarSenhaPorEmailForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(
         message=ERRO_INPUT_REQUIRED), Email(message=ERRO_EMAIL), Length(min=1, max=254)])
     recaptcha = RecaptchaField()
-
-
-class ContatoForm(FlaskForm):
-    nome_completo = StringField('Nome', validators=[InputRequired(
-        message=ERRO_INPUT_REQUIRED), Length(min=1, max=30)])
-    email = StringField('Email', validators=[InputRequired(
-        message=ERRO_INPUT_REQUIRED), Length(min=1, max=30)])
-    mensagem = StringField('Mensagem', validators=[InputRequired(
-        message=ERRO_INPUT_REQUIRED), Length(min=1, max=500)])
-
-
-class PatrocinadorForm(FlaskForm):
-    nome_empresa = StringField('Nome', validators=[InputRequired(
-        message=ERRO_INPUT_REQUIRED), Length(min=1, max=100)])
-    logo = StringField('Logo', validators=[InputRequired(
-        message=ERRO_INPUT_REQUIRED), Length(min=1, max=100)])
-    ativo_site = BooleanField('Ativo', validators=[InputRequired()], id="ativo_site")
-    id_cota = SelectField('Cota', choices=get_opcoes_cotas_patrocinadores(),
-        id="cota", default="0", coerce=int)
-    link_website = StringField('Site', validators=[InputRequired(
-        message=ERRO_INPUT_REQUIRED), Length(min=1, max=200)])
-
-
-class ComprovanteForm(FlaskForm):
-    comprovante = FileField('Comprovante de Pagamento', validators=[
-            FileRequired(message=ERRO_INPUT_REQUIRED),
-            FileAllowed(['png', 'jpg', 'jpeg'], message=ERRO_EXTENSAO_INVALIDA)
-        ])
-
-
-class AlteraCamisetaForm(FlaskForm):
-    participante = SelectField("Selecione o usuário", choices=get_participantes(), id="participante", coerce=int)
-    camiseta = SelectField("Modelos", choices=get_opcoes_camisetas(), default="P Feminino", id="camiseta", coerce=int)
-
-
-class VendaKitForm(FlaskForm):
-    participante = SelectField("Inscrições na SECOMP 2019", choices=get_participantes(), id="participante", coerce=int)
-    camiseta = SelectField("Modelos", choices=get_opcoes_camisetas(), default="P Feminino", id="camiseta", coerce=int)
